@@ -8,4 +8,5 @@ interface AuthRepository {
 
     fun loginUser(email: String, password: String): Flow<Resource<AuthResult>>
     fun registerUser(email: String, password: String): Flow<Resource<AuthResult>>
+    fun isUserSignedIn(): String
 }

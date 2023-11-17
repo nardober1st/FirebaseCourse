@@ -21,92 +21,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-//@HiltViewModel
-//class CadastroViewModel @Inject constructor(
-//    private val validateCadastro: ValidateCadastro,
-//    private val repository: AuthRepositoryImpl
-//) : ViewModel() {
-//
-//    var cadastroState by mutableStateOf(CadastroState())
-//        private set
-//
-//    private var _cadastroChannelEvent = Channel<CadastroEvent>()
-//    var cadastroChannelEvent = _cadastroChannelEvent.receiveAsFlow()
-//
-////    val result = validateCadastro(
-////        onEmailText = cadastroState.email,
-////        onPasswordText = cadastroState.password
-////    )
-//
-//    fun onEvent(event: CadastroEvent) {
-//        when (event) {
-//            is CadastroEvent.EmailChanged -> {
-//                cadastroState = cadastroState.copy(
-//                    email = event.email
-//                )
-//                cadastroState = cadastroState.copy(
-//                    isError = null
-//                )
-//                printState()
-//            }
-//
-//            is CadastroEvent.PasswordChanged -> {
-//                cadastroState = cadastroState.copy(
-//                    password = event.password
-//                )
-//                cadastroState = cadastroState.copy(
-//                    isError = null
-//                )
-//                printState()
-//            }
-//
-//            is CadastroEvent.CadastroClick -> {
-//                viewModelScope.launch {
-//                    repository.registerUser(cadastroState.email, cadastroState.password)
-//                        .collect { authResult ->
-//                            when (authResult) {
-//                                is Resource.Success -> {
-//                                    _cadastroChannelEvent.send(CadastroEvent.CadastroClick)
-//                                    cadastroState = cadastroState.copy(isLoading = false)
-//                                }
-//
-//                                is Resource.Loading -> {
-//                                    cadastroState = cadastroState.copy(
-//                                        isLoading = true
-//                                    )
-//                                }
-//
-//                                is Resource.Error -> {
-//                                    cadastroState = cadastroState.copy(
-//                                        isError = authResult.message
-//                                    )
-//                                    cadastroState = cadastroState.copy(
-//                                        isLoading = false
-//                                    )
-//                                }
-//
-//                                else -> {}
-//                            }
-//                        }
-//                }
-//            }
-//
-//            else -> {}
-//        }
-//    }
-//
-//    private fun printState() {
-//        Log.d("TAGY", "Inside_printState")
-//        Log.d("TAGY", cadastroState.toString())
-//    }
-//
-//    private fun signUp() {
-//        Log.d("TAGY", "Inside_signup")
-//        printState()
-//        // Implement sign-up logic here
-//    }
-//}
-
 @HiltViewModel
 class CadastroViewModel @Inject constructor(
     private val repository: AuthRepositoryImpl
@@ -147,14 +61,14 @@ class CadastroViewModel @Inject constructor(
     }
 
     private fun handleAuthResult(authResult: Resource<AuthResult>) {
-
         when (authResult) {
             is Resource.Success -> {
                 viewModelScope.launch {
                     _cadastroChannelEvent.send(CadastroEvent.CadastroClick)
                     cadastroState = cadastroState.copy(
                         isLoading = false,
-                        isSuccess = true)
+                        isSuccess = true
+                    )
                 }
             }
 
@@ -171,8 +85,7 @@ class CadastroViewModel @Inject constructor(
                 )
             }
 
-            else -> { /* Handle other cases if needed */
-            }
+            else -> { }
         }
     }
 

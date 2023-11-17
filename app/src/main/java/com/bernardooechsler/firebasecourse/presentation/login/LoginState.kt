@@ -5,5 +5,8 @@ data class LoginState(
     var password: String = "",
     var isLoginClicked: Boolean = false,
     var isCadastroClicked: Boolean = false,
+    var isLoading: Boolean = false,
+    var isError: String? = "",
+    val isSuccess: Boolean = false,
     var isLoggedIn: Boolean = false
 )

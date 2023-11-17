@@ -6,25 +6,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bernardooechsler.firebasecourse.data.repository.AuthRepositoryImpl
+import com.bernardooechsler.firebasecourse.util.Resource
+import com.google.firebase.auth.AuthResult
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val repository: AuthRepositoryImpl
+) : ViewModel() {
 
     var loginState by mutableStateOf(LoginState())
         private set
 
     private var _loginChannelEvent = Channel<LoginEvent>()
     var loginChannelEvent = _loginChannelEvent.receiveAsFlow()
-//
-//    private var _loginSharedFlowEvent = MutableSharedFlow<LoginEvent>()
-//    var loginSharedFlowEvent = _loginSharedFlowEvent.asSharedFlow()
-
-//    var isLoggedIn by mutableStateOf(false)
-//        private set
 
     fun onEvent(event: LoginEvent) {
         viewModelScope.launch {
@@ -32,41 +32,75 @@ class LoginViewModel : ViewModel() {
             when (event) {
                 is LoginEvent.EmailChanged -> {
                     loginState = loginState.copy(
-                        email = event.email
+                        email = event.email,
+                        isError = null
                     )
                     printState()
                 }
 
                 is LoginEvent.PasswordChanged -> {
                     loginState = loginState.copy(
-                        password = event.password
+                        password = event.password,
+                        isError = null
                     )
                     printState()
                 }
 
                 is LoginEvent.LoginClick -> {
-//                viewModelScope.launch {
-                    loginState = loginState.copy(
-                        isLoginClicked = true,
-                        isLoggedIn = true,
-                        isCadastroClicked = false
-                    )
-                    _loginChannelEvent.send(LoginEvent.LoginClick)
+                    onLoginClick()
                     login()
-//            }
                 }
 
                 is LoginEvent.SignUpClick -> {
-//            viewModelScope.launch {
                     loginState = loginState.copy(
                         isLoginClicked = false,
                         isCadastroClicked = true
                     )
                     _loginChannelEvent.send(LoginEvent.SignUpClick)
                     signUp()
-//            }
                 }
             }
+        }
+    }
+
+    private fun onLoginClick() {
+        loginState = loginState.copy(
+            isLoginClicked = true
+        )
+        viewModelScope.launch {
+            repository.loginUser(loginState.email, loginState.password).collect {
+                handleAuthResult(it)
+            }
+        }
+    }
+
+    private fun handleAuthResult(authResult: Resource<AuthResult>) {
+        when (authResult) {
+            is Resource.Success -> {
+                viewModelScope.launch {
+                    _loginChannelEvent.send(LoginEvent.LoginClick)
+                    loginState = loginState.copy(
+                        isLoggedIn = true,
+                        isLoading = false,
+                        isSuccess = true
+                    )
+                }
+            }
+
+            is Resource.Loading -> {
+                loginState = loginState.copy(isLoading = true)
+            }
+
+            is Resource.Error -> {
+                loginState = loginState.copy(
+                    isError = authResult.message
+                )
+                loginState = loginState.copy(
+                    isLoading = false
+                )
+            }
+
+            else -> {}
         }
     }
 
@@ -78,12 +112,17 @@ class LoginViewModel : ViewModel() {
     private fun login() {
         Log.d("TAGY", "Inside_login")
         printState()
-        // Implement login logic here
     }
 
     private fun signUp() {
         Log.d("TAGY", "Inside_signup")
         printState()
-        // Implement sign-up logic here
+    }
+
+    fun resetTextFields() {
+        loginState = loginState.copy(
+            email = "",
+            password = ""
+        )
     }
 }
