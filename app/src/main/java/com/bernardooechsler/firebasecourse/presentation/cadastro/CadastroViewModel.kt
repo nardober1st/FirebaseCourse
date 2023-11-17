@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bernardooechsler.firebasecourse.data.model.User
 import com.bernardooechsler.firebasecourse.data.repository.AuthRepositoryImpl
 import com.bernardooechsler.firebasecourse.domain.use_cases.ValidateCadastro
 import com.bernardooechsler.firebasecourse.util.Resource
@@ -44,6 +45,10 @@ class CadastroViewModel @Inject constructor(
                 printState()
             }
 
+            is CadastroEvent.NameChanged -> {
+                cadastroState = cadastroState.copy(name = event.name, isError = null)
+            }
+
             is CadastroEvent.CadastroClick -> {
                 onCadastroClick()
                 printState()
@@ -52,11 +57,14 @@ class CadastroViewModel @Inject constructor(
     }
 
     private fun onCadastroClick() {
+        val user = User(
+            email = cadastroState.email,
+            name = cadastroState.name
+        )
         viewModelScope.launch {
-            val result =
-                repository.registerUser(cadastroState.email, cadastroState.password).collect {
-                    handleAuthResult(it)
-                }
+            repository.registerUser(user, cadastroState.password).collect {
+                handleAuthResult(it)
+            }
         }
     }
 
@@ -85,7 +93,7 @@ class CadastroViewModel @Inject constructor(
                 )
             }
 
-            else -> { }
+            else -> {}
         }
     }
 
