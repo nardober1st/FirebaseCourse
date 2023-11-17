@@ -42,16 +42,17 @@ fun CadastroScreen(
 ) {
 
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         snackbarHost = {
             SnackbarHost(hostState = snackBar)
-        }) {
+        }
+    ) {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
             Text(
                 modifier = Modifier
