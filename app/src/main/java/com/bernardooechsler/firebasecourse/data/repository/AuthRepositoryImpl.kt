@@ -2,7 +2,6 @@ package com.bernardooechsler.firebasecourse.data.repository
 
 import com.bernardooechsler.firebasecourse.data.model.User
 import com.bernardooechsler.firebasecourse.domain.repository.AuthRepository
-import com.bernardooechsler.firebasecourse.domain.use_cases.ValidateCadastro
 import com.bernardooechsler.firebasecourse.presentation.navigation.Route
 import com.bernardooechsler.firebasecourse.util.Resource
 import com.google.firebase.FirebaseNetworkException
@@ -14,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -99,5 +97,9 @@ class AuthRepositoryImpl @Inject constructor(
         } else {
             Route.LoginScreen.route
         }
+    }
+
+    override fun signUserOut() {
+        firebaseAuth.signOut()
     }
 }

@@ -124,6 +124,10 @@ class LoginViewModel @Inject constructor(
         printState()
     }
 
+    fun resetFields() {
+        loginState = LoginState()
+    }
+
     fun resetTextFields() {
         loginState = loginState.copy(
             email = "",
