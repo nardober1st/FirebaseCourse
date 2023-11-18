@@ -76,6 +76,14 @@ fun CadastroScreen(
                         Text(text = "Email")
                     })
                 OutlinedTextField(modifier = Modifier.padding(top = 10.dp),
+                    value = state.name,
+                    onValueChange = {
+                        onEvent(CadastroEvent.NameChanged(it))
+                    },
+                    label = {
+                        Text(text = "Name")
+                    })
+                OutlinedTextField(modifier = Modifier.padding(top = 10.dp),
                     value = state.password,
                     onValueChange = {
                         onEvent(CadastroEvent.PasswordChanged(it))

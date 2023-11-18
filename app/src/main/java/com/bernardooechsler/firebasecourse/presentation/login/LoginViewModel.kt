@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bernardooechsler.firebasecourse.data.model.User
 import com.bernardooechsler.firebasecourse.data.repository.AuthRepositoryImpl
 import com.bernardooechsler.firebasecourse.util.Resource
 import com.google.firebase.auth.AuthResult
@@ -67,8 +68,12 @@ class LoginViewModel @Inject constructor(
         loginState = loginState.copy(
             isLoginClicked = true
         )
+        val user = User(
+            email = loginState.email,
+            name = null
+        )
         viewModelScope.launch {
-            repository.loginUser(loginState.email, loginState.password).collect {
+            repository.loginUser(user, loginState.password).collect {
                 handleAuthResult(it)
             }
         }
@@ -117,6 +122,10 @@ class LoginViewModel @Inject constructor(
     private fun signUp() {
         Log.d("TAGY", "Inside_signup")
         printState()
+    }
+
+    fun resetFields() {
+        loginState = LoginState()
     }
 
     fun resetTextFields() {

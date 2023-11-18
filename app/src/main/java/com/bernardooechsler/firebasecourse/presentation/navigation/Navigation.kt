@@ -11,12 +11,14 @@ import androidx.navigation.compose.rememberNavController
 import com.bernardooechsler.firebasecourse.presentation.cadastro.CadastroEvent
 import com.bernardooechsler.firebasecourse.presentation.cadastro.CadastroScreen
 import com.bernardooechsler.firebasecourse.presentation.cadastro.CadastroViewModel
+import com.bernardooechsler.firebasecourse.presentation.home.HomeEvent
 import com.bernardooechsler.firebasecourse.presentation.home.HomeScreen
 import com.bernardooechsler.firebasecourse.presentation.home.HomeViewModel
 import com.bernardooechsler.firebasecourse.presentation.login.LoginEvent
 import com.bernardooechsler.firebasecourse.presentation.login.LoginScreen
 import com.bernardooechsler.firebasecourse.presentation.login.LoginViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun Navigation() {
@@ -28,6 +30,7 @@ fun Navigation() {
     val cadastroState = cadastroViewModel.cadastroState
 
     val homeViewModel: HomeViewModel = hiltViewModel()
+    val homeState = homeViewModel.homeState
 
     val navController = rememberNavController()
 
@@ -48,11 +51,8 @@ fun Navigation() {
                 loginViewModel.loginChannelEvent.collect { event ->
                     when (event) {
                         is LoginEvent.LoginClick -> {
-                            navController.navigate(Route.HomeScreen.route) {
-                                popUpTo(Route.LoginScreen.route) {
-                                    inclusive = true
-                                }
-                            }
+                            navController.navigate(Route.HomeScreen.route)
+                            loginViewModel.resetFields()
                         }
 
                         is LoginEvent.SignUpClick -> {
@@ -89,7 +89,20 @@ fun Navigation() {
             )
         }
         composable("homeScreen") {
-            HomeScreen(navController = navController)
+            LaunchedEffect(true) {
+                homeViewModel.homeChannelEvent.collect { event ->
+                    when (event) {
+                        is HomeEvent.OnSignOutClick -> {
+                            navController.navigate(Route.LoginScreen.route)
+                        }
+                    }
+                }
+            }
+            HomeScreen(
+                snackBar = scaffoldState,
+                state = homeState,
+                onEvent = homeViewModel::onEvent
+            )
         }
     }
 }

@@ -4,6 +4,7 @@ import com.bernardooechsler.firebasecourse.data.repository.AuthRepositoryImpl
 import com.bernardooechsler.firebasecourse.domain.repository.AuthRepository
 import com.bernardooechsler.firebasecourse.domain.use_cases.ValidateCadastro
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,8 +21,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesRepositoryImpl(firebaseAuth: FirebaseAuth): AuthRepository {
-        return AuthRepositoryImpl(firebaseAuth)
+    fun providesFirebaseFirestore() = FirebaseFirestore.getInstance()
+
+    @Provides
+    @Singleton
+    fun providesRepositoryImpl(firebaseAuth: FirebaseAuth, firebaseFirestore: FirebaseFirestore): AuthRepository {
+        return AuthRepositoryImpl(firebaseAuth, firebaseFirestore)
     }
 
     @Provides

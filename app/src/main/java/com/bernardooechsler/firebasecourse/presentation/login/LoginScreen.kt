@@ -45,11 +45,11 @@ fun LoginScreen(
     val savedState = rememberSaveableStateHolder()
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(state.isLoggedIn) {
-        if (state.isLoggedIn) {
-            onEvent(LoginEvent.LoginClick)
-        }
-    }
+//    LaunchedEffect(state.isLoggedIn) {
+//        if (state.isLoggedIn) {
+//            onEvent(LoginEvent.LoginClick)
+//        }
+//    }
 
     Scaffold(
         modifier = Modifier
@@ -131,22 +131,22 @@ fun LoginScreen(
 
                 when {
                     state.isLoading -> {
-//                        Dialog(
-//                            onDismissRequest = { state.isLoading = false },
-//                            DialogProperties(
-//                                dismissOnBackPress = false,
-//                                dismissOnClickOutside = false
-//                            )
-//                        ) {
-//                            Box(
-//                                contentAlignment = Alignment.Center,
-//                                modifier = Modifier
-//                                    .size(100.dp)
-//                                    .background(Color.White, shape = RoundedCornerShape(8.dp))
-//                            ) {
+                        Dialog(
+                            onDismissRequest = { state.isLoading = false },
+                            DialogProperties(
+                                dismissOnBackPress = false,
+                                dismissOnClickOutside = false
+                            )
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                            ) {
                                 CircularProgressIndicator()
-//                            }
-//                        }
+                            }
+                        }
                     }
 
                     state.isError?.isNotEmpty() == true -> {
