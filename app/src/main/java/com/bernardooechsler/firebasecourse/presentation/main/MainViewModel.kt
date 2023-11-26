@@ -1,4 +1,4 @@
-package com.bernardooechsler.firebasecourse.presentation.home
+package com.bernardooechsler.firebasecourse.presentation.main
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,36 +6,31 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bernardooechsler.firebasecourse.data.repository.AuthRepositoryImpl
-import com.bernardooechsler.firebasecourse.presentation.login.LoginEvent
-import com.bernardooechsler.firebasecourse.presentation.login.LoginState
-import com.bernardooechsler.firebasecourse.util.Resource
-import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class MainViewModel @Inject constructor(
     private val repository: AuthRepositoryImpl
 ) : ViewModel() {
 
-    var homeState by mutableStateOf(HomeState())
+    var mainState by mutableStateOf(MainState())
         private set
 
-    private var _homeChannelEvent = Channel<HomeEvent>()
+    private var _homeChannelEvent = Channel<MainEvent>()
     var homeChannelEvent = _homeChannelEvent.receiveAsFlow()
 
     fun isUserSignedIn(): String {
         return repository.isUserSignedIn()
     }
 
-    fun onEvent(event: HomeEvent) {
+    fun onEvent(event: MainEvent) {
         when (event) {
-            is HomeEvent.OnSignOutClick -> {
-                homeState = homeState.copy(
+            is MainEvent.OnSignOutClick -> {
+                mainState = mainState.copy(
                     isSignOutClicked = true
                 )
                 onSignUserOut()
@@ -46,7 +41,7 @@ class HomeViewModel @Inject constructor(
     private fun onSignUserOut() {
         viewModelScope.launch {
             repository.signUserOut()
-            homeState = homeState.copy(
+            mainState = mainState.copy(
                 isSignOutClicked = false
             )
         }

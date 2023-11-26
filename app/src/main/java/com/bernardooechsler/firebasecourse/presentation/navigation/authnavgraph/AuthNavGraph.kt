@@ -1,60 +1,46 @@
-package com.bernardooechsler.firebasecourse.presentation.navigation
+package com.bernardooechsler.firebasecourse.presentation.navigation.authnavgraph
 
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.bernardooechsler.firebasecourse.presentation.cadastro.CadastroEvent
 import com.bernardooechsler.firebasecourse.presentation.cadastro.CadastroScreen
 import com.bernardooechsler.firebasecourse.presentation.cadastro.CadastroViewModel
-import com.bernardooechsler.firebasecourse.presentation.main.MainEvent
-import com.bernardooechsler.firebasecourse.presentation.main.MainScreen
-import com.bernardooechsler.firebasecourse.presentation.main.MainViewModel
 import com.bernardooechsler.firebasecourse.presentation.login.LoginEvent
 import com.bernardooechsler.firebasecourse.presentation.login.LoginScreen
 import com.bernardooechsler.firebasecourse.presentation.login.LoginViewModel
+import com.bernardooechsler.firebasecourse.presentation.navigation.rootnavgraph.RootGraphRoutes
 
-@Composable
-fun Navigation() {
-
-    val loginViewModel: LoginViewModel = hiltViewModel()
-    val loginState = loginViewModel.loginState
-
-    val cadastroViewModel: CadastroViewModel = hiltViewModel()
-    val cadastroState = cadastroViewModel.cadastroState
-
-    val mainViewModel: MainViewModel = hiltViewModel()
-    val homeState = mainViewModel.mainState
-
-    val navController = rememberNavController()
-
-    val scaffoldState = remember {
-        SnackbarHostState()
-    }
-
-//    val user = firebaseAuth.currentUser
-
-    val isUserSignedIn = mainViewModel.isUserSignedIn()
-
-    NavHost(
-        navController = navController,
-        startDestination = isUserSignedIn
+fun NavGraphBuilder.authNavGraph(
+    navController: NavHostController
+) {
+    navigation(
+        route = RootGraphRoutes.AuthGraphRoute.route,
+        startDestination = AuthRoutes.LoginRoute.route
     ) {
-        composable("loginScreen") {
+        composable(route = AuthRoutes.LoginRoute.route) {
+            val loginViewModel: LoginViewModel = hiltViewModel()
+            val loginState = loginViewModel.loginState
+
+            val scaffoldState = remember {
+                SnackbarHostState()
+            }
             LaunchedEffect(true) {
                 loginViewModel.loginChannelEvent.collect { event ->
                     when (event) {
                         is LoginEvent.LoginClick -> {
-                            navController.navigate(Route.HomeScreen.route)
+                            navController.popBackStack()
+                            navController.navigate(RootGraphRoutes.MainGraphRoute.route)
                             loginViewModel.resetFields()
                         }
 
                         is LoginEvent.SignUpClick -> {
-                            navController.navigate(Route.CadastroScreen.route)
+                            navController.navigate(AuthRoutes.SignupRoute.route)
                             loginViewModel.resetTextFields()
                         }
 
@@ -67,8 +53,15 @@ fun Navigation() {
                 state = loginState,
                 onEvent = loginViewModel::onEvent
             )
+
         }
-        composable("cadastroScreen") {
+        composable(route = AuthRoutes.SignupRoute.route) {
+            val cadastroViewModel: CadastroViewModel = hiltViewModel()
+            val cadastroState = cadastroViewModel.cadastroState
+
+            val scaffoldState = remember {
+                SnackbarHostState()
+            }
             LaunchedEffect(true) {
                 cadastroViewModel.cadastroChannelEvent.collect { event ->
                     when (event) {
@@ -84,22 +77,6 @@ fun Navigation() {
                 snackBar = scaffoldState,
                 state = cadastroState,
                 onEvent = cadastroViewModel::onEvent
-            )
-        }
-        composable("homeScreen") {
-            LaunchedEffect(true) {
-                mainViewModel.homeChannelEvent.collect { event ->
-                    when (event) {
-                        is MainEvent.OnSignOutClick -> {
-                            navController.navigate(Route.LoginScreen.route)
-                        }
-                    }
-                }
-            }
-            MainScreen(
-                snackBar = scaffoldState,
-                state = homeState,
-                onEvent = mainViewModel::onEvent
             )
         }
     }

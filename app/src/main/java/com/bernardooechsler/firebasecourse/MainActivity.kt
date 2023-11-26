@@ -10,7 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 import com.bernardooechsler.firebasecourse.presentation.navigation.Navigation
+import com.bernardooechsler.firebasecourse.presentation.navigation.rootnavgraph.RootNavigationGraph
 import com.bernardooechsler.firebasecourse.ui.theme.FirebaseCourseTheme
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FirebaseCourseTheme {
-                Navigation()
+                RootNavigationGraph(navController = rememberNavController())
             }
         }
     }

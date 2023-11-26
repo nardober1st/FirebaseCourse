@@ -2,7 +2,7 @@ package com.bernardooechsler.firebasecourse.data.repository
 
 import com.bernardooechsler.firebasecourse.data.model.User
 import com.bernardooechsler.firebasecourse.domain.repository.AuthRepository
-import com.bernardooechsler.firebasecourse.presentation.navigation.Route
+import com.bernardooechsler.firebasecourse.presentation.navigation.rootnavgraph.RootGraphRoutes
 import com.bernardooechsler.firebasecourse.util.Resource
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.AuthResult
@@ -93,9 +93,9 @@ class AuthRepositoryImpl @Inject constructor(
     override fun isUserSignedIn(): String {
         val user = firebaseAuth.currentUser?.uid
         return if (user != null) {
-            Route.HomeScreen.route
+            RootGraphRoutes.MainGraphRoute.route
         } else {
-            Route.LoginScreen.route
+            RootGraphRoutes.AuthGraphRoute.route
         }
     }
 
