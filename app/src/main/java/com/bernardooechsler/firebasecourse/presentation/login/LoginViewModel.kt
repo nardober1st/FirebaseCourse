@@ -39,6 +39,14 @@ class LoginViewModel @Inject constructor(
                     printState()
                 }
 
+                is LoginEvent.EmailRecoverChanged -> {
+                    loginState = loginState.copy(
+                        emailRecover = event.emailRecover,
+                        isError = null
+                    )
+                    printState()
+                }
+
                 is LoginEvent.PasswordChanged -> {
                     loginState = loginState.copy(
                         password = event.password,
@@ -60,6 +68,25 @@ class LoginViewModel @Inject constructor(
                     _loginChannelEvent.send(LoginEvent.SignUpClick)
                     signUp()
                 }
+
+                is LoginEvent.SendEmailClick -> {
+                    val user = User(
+                        email = loginState.emailRecover
+                    )
+                    loginState = loginState.copy(
+                        isSendEmailClick = true,
+                        isLoading = true
+                    )
+                    viewModelScope.launch {
+                        repository.recoverPassword(user)
+                        loginState = loginState.copy(
+                            isSendEmailClick = true,
+                            isLoading = false
+                        )
+                    }
+                }
+
+                else -> {}
             }
         }
     }

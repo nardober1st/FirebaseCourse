@@ -17,8 +17,6 @@ import com.bernardooechsler.firebasecourse.presentation.home.HomeViewModel
 import com.bernardooechsler.firebasecourse.presentation.login.LoginEvent
 import com.bernardooechsler.firebasecourse.presentation.login.LoginScreen
 import com.bernardooechsler.firebasecourse.presentation.login.LoginViewModel
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.collect
 
 @Composable
 fun Navigation() {

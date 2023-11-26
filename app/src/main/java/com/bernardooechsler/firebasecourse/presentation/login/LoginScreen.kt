@@ -5,24 +5,34 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,14 +52,11 @@ fun LoginScreen(
     onEvent: (LoginEvent) -> Unit
 ) {
 
-    val savedState = rememberSaveableStateHolder()
     val scope = rememberCoroutineScope()
-
-//    LaunchedEffect(state.isLoggedIn) {
-//        if (state.isLoggedIn) {
-//            onEvent(LoginEvent.LoginClick)
-//        }
-//    }
+    val sheetState = rememberModalBottomSheetState()
+    var isSheetOpen by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     Scaffold(
         modifier = Modifier
@@ -96,12 +103,16 @@ fun LoginScreen(
                         Text(text = "Senha")
                     }
                 )
-                Text(
+                TextButton(
                     modifier = Modifier
                         .align(Alignment.End)
                         .padding(end = 40.dp),
-                    text = "Esqueceu a senha?"
-                )
+                    onClick = {
+                        isSheetOpen = true
+                    }) {
+                    Text(text = "Esqueceu a senha?")
+                }
+
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -127,6 +138,36 @@ fun LoginScreen(
                         onEvent(LoginEvent.SignUpClick)
                     }) {
                     Text(text = "Sign Up")
+                }
+                if (isSheetOpen) {
+                    ModalBottomSheet(
+                        onDismissRequest = { isSheetOpen = false }) {
+                        Text(
+                            modifier = Modifier.padding(start = 20.dp, top = 20.dp),
+                            text = "Type your email to receive a link to recover your password!"
+                        )
+                        Spacer(modifier = Modifier.padding(top = 20.dp))
+                        OutlinedTextField(
+                            modifier = Modifier.padding(20.dp),
+                            value = state.emailRecover,
+                            onValueChange = {
+                                onEvent(LoginEvent.EmailRecoverChanged(it))
+                            },
+                            label = {
+                                Text(text = "Email")
+                            },
+                            trailingIcon = {
+                                IconButton(onClick = {
+                                    onEvent(LoginEvent.SendEmailClick)
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Email,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        )
+                    }
                 }
 
                 when {

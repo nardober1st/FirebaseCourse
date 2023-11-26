@@ -102,4 +102,8 @@ class AuthRepositoryImpl @Inject constructor(
     override fun signUserOut() {
         firebaseAuth.signOut()
     }
+
+    override fun recoverPassword(user: User) {
+        firebaseAuth.sendPasswordResetEmail(user.email)
+    }
 }
