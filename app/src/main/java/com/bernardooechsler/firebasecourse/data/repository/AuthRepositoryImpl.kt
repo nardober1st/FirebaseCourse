@@ -90,17 +90,15 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun isUserSignedIn(): String {
-        val user = firebaseAuth.currentUser?.uid
-        return if (user != null) {
-            RootGraphRoutes.MainGraphRoute.route
-        } else {
-            RootGraphRoutes.AuthGraphRoute.route
-        }
+    override fun isUserSignedIn(): Boolean {
+        return firebaseAuth.currentUser != null
     }
 
     override fun signUserOut() {
-        firebaseAuth.signOut()
+        val user = firebaseAuth.currentUser?.uid
+        if (user != null) {
+            firebaseAuth.signOut()
+        }
     }
 
     override fun recoverPassword(user: User) {

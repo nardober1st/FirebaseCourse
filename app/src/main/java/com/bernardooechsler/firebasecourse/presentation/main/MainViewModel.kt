@@ -23,7 +23,7 @@ class MainViewModel @Inject constructor(
     private var _homeChannelEvent = Channel<MainEvent>()
     var homeChannelEvent = _homeChannelEvent.receiveAsFlow()
 
-    fun isUserSignedIn(): String {
+    fun isUserSignedIn(): Boolean {
         return repository.isUserSignedIn()
     }
 
@@ -41,9 +41,7 @@ class MainViewModel @Inject constructor(
     private fun onSignUserOut() {
         viewModelScope.launch {
             repository.signUserOut()
-            mainState = mainState.copy(
-                isSignOutClicked = false
-            )
+            _homeChannelEvent.send(MainEvent.OnSignOutClick)
         }
     }
 }

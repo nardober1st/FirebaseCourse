@@ -34,7 +34,6 @@ import com.bernardooechsler.firebasecourse.presentation.navigation.mainnavgraph.
 @Composable
 fun MainScreen(
     snackBar: SnackbarHostState,
-    state: MainState,
     onEvent: (MainEvent) -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
